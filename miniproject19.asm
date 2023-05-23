@@ -1,6 +1,6 @@
 .data
-message: .asciiz "Input some variable names:"
 variable: .space 100
+message: .asciiz "Input some variable names:"
 message1: .asciiz "variableName("
 message2: .asciiz ") = false\n"
 message3: .asciiz ") = true\n"
@@ -63,10 +63,8 @@ end:
 				
 check_first_char:
 	la $a0, variable
-	addi $a0, $a0, -3
 	lw $t0, 0($a0)
-	andi $t1, $t0, 0xff000000
-	srl $t1, $t1, 24 
+	andi $t1, $t0, 0x000000ff
 	jal check_end
 	bne $t6, $zero, false
 	jal check_word
@@ -77,18 +75,6 @@ check_first_char:
 	jal check_false
 	
 check_char:
-	addi $a0, $a0, 4
-	lw $t0, 0($a0)
-	andi $t1, $t0, 0x000000ff
-	jal check_end
-	bne $t6, $zero, end1
-	jal check_word
-	jal check_digit
-	jal check_under
-	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 and $t3 == 1
-	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 and $t3 == 1 and $t4 == 1
-	jal check_false
-	
 	andi $t1, $t0, 0x0000ff00
 	srl $t1, $t1, 8
 	jal check_end
@@ -121,6 +107,20 @@ check_char:
 	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 or $t3 == 1
 	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 or $t3 == 1 or $t4 == 1
 	jal check_false
+	
+	addi $a0, $a0, 4
+	lw $t0, 0($a0)
+	
+	andi $t1, $t0, 0x000000ff
+	jal check_end
+	bne $t6, $zero, end1
+	jal check_word
+	jal check_digit
+	jal check_under
+	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 and $t3 == 1
+	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 and $t3 == 1 and $t4 == 1
+	jal check_false
+	
 	j check_char
 check_false1:
 	beq $t3, $zero, not_false
@@ -177,7 +177,3 @@ false:
 	la $a0, message2
 	syscall
 done:
-
-
-
-
