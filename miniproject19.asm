@@ -4,8 +4,9 @@ message: .asciiz "Input some variable names:"
 message1: .asciiz "variableName("
 message2: .asciiz ") = false\n"
 message3: .asciiz ") = true\n"
+
 .text
-input_variable_name:
+input_variable_name: # Nhap ten bien can check
 	addi $t8, $zero, 1
 	li $v0, 54
 	la $a0, message
@@ -44,16 +45,19 @@ check_under:
 	li $t7, 95
 	beq $t1, $t7, under #if $t1 == 95 then go to under
 	li $t4, 0
+	
 	jr $ra
 	
 under:
 	li $t4, 1
+	
 	jr $ra
 	
 check_end:
 	li $t7, 10
 	beq $t1, $t7, end #if $t1 == 95 then go to end
 	li $t6, 0
+	
 	jr $ra
 	
 end:
@@ -63,8 +67,7 @@ end:
 				
 check_first_char:
 	la $a0, variable
-	lw $t0, 0($a0)
-	andi $t1, $t0, 0x000000ff
+	lb $t1, 0($a0)
 	jal check_end
 	bne $t6, $zero, false
 	jal check_word
@@ -75,81 +78,40 @@ check_first_char:
 	jal check_false
 	
 check_char:
-	andi $t1, $t0, 0x0000ff00
-	srl $t1, $t1, 8
+	addi $a0, $a0, 1
+	
+	lb $t1, 0($a0)
 	jal check_end
-	bne $t6, $zero, end2
+	bne $t6, $zero, end_proc
 	jal check_word
 	jal check_digit
 	jal check_under
 	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 or $t3 == 1
 	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 or $t3 == 1 or $t4 == 1
-	jal check_false
-	
-	andi $t1, $t0, 0x00ff0000
-	srl $t1, $t1, 16
-	jal check_end
-	bne $t6, $zero, end3
-	jal check_word
-	jal check_digit
-	jal check_under
-	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 or $t3 == 1
-	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 or $t3 == 1 or $t4 == 1
-	jal check_false
-	
-	andi $t1, $t0, 0xff000000
-	srl $t1, $t1, 24
-	jal check_end
-	bne $t6, $zero, end4
-	jal check_word
-	jal check_digit
-	jal check_under
-	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 or $t3 == 1
-	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 or $t3 == 1 or $t4 == 1
-	jal check_false
-	
-	addi $a0, $a0, 4
-	lw $t0, 0($a0)
-	
-	andi $t1, $t0, 0x000000ff
-	jal check_end
-	bne $t6, $zero, end1
-	jal check_word
-	jal check_digit
-	jal check_under
-	or $t5, $t2, $t3 #$t5 = 1 if $t2 == 1 and $t3 == 1
-	or $t5, $t4, $t5 #$t5 = 1 if $t2 == 1 and $t3 == 1 and $t4 == 1
 	jal check_false
 	
 	j check_char
+	
 check_false1:
 	beq $t3, $zero, not_false
 	add $t8, $zero, $t3
+	
 	jr $ra
+	
 check_false:
+
 	bne $t5, $zero, not_false
 	add $t8, $zero, $t5
+	
 	jr $ra
+	
 not_false:
+
 	jr $ra
-end1:
-	andi $t0, $t0, 0xffffff00
-	sw $t0, 0($a0)
-	bne $t8, $zero, true
-	j false
-end2:
-	andi $t0, $t0, 0xffff00ff
-	sw $t0, 0($a0)
-	bne $t8, $zero, true
-	j false
-end3:
-	andi $t0, $t0, 0xff00ffff
-	sw $t0, 0($a0)
-	bne $t8, $zero, true
-	j false
-end4:
-	andi $t0, $t0, 0x00ffffff
-	sw $t0, 0($a0)
+	
+end_proc:
+	li $s1, 0
+	sb $t0, 0($a0)
 	bne $t8, $zero, true
 	j false
 	
