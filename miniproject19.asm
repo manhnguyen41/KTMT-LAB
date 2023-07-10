@@ -1,5 +1,5 @@
 .data
-variable: .space 100
+variable: .space 1000
 message: .asciiz "Input some variable names:"
 message1: .asciiz "variableName("
 message2: .asciiz ") = false\n"
@@ -15,7 +15,7 @@ input_variable_name: # Nhap ten bien can check
 	syscall
 	j check_first_char
 	
-check_word:
+check_word: # check xem $t1 co phai la ki tu trong bang chu cai khong, $t2 bang 1 neu phai va bang 0 neu khong phai
 	slti $t2, $t1, 65 #$t2 = 1 if $t1 < 65
 	not $t2, $t2 #$t2 = 1 if $t1 >= 65
 	slti $t3, $t1, 91 #$t3 = 1 if $t1 <= 90
@@ -32,7 +32,7 @@ check_word:
 	
 	jr $ra
 	
-check_digit:
+check_digit: # check xem $t1 co phai so hay khong, $t3 bang 1 neu phai va bang 0 neu khong phai
 	slti $t3, $t1, 48 #$t3 = 1 if $t1 < 48
 	not $t3, $t3 #$t3 = 1 if $t1 >= 48
 	slti $t4, $t1, 58 #$t4 = 1 if $t1 <= 57
@@ -41,31 +41,31 @@ check_digit:
 	
 	jr $ra
 	
-check_under:
+check_under: # check xem $t1 co phai _ hay khong, $t4 bang 1 neu phai va bang 0 neu khong phai
 	li $t7, 95
 	beq $t1, $t7, under #if $t1 == 95 then go to under
 	li $t4, 0
 	
 	jr $ra
 	
-under:
+under: # gan $t4 bang 1 
 	li $t4, 1
 	
 	jr $ra
 	
-check_end:
+check_end: # check xem $t1 co phai ki tu ket thuc xau hay khong, $t6 bang 1 neu phai va bang 0 neu khong phai
 	li $t7, 10
 	beq $t1, $t7, end #if $t1 == 95 then go to end
 	li $t6, 0
 	
 	jr $ra
 	
-end:
+end: # gan $t6 bang 1
 	li $t6, 1
 	
 	jr $ra
 				
-check_first_char:
+check_first_char: # check ki tu dau tien, neu no la so thi ket qua cua chuong trinh la false
 	la $a0, variable
 	lb $t1, 0($a0)
 	jal check_end
@@ -77,7 +77,7 @@ check_first_char:
 	or $t5, $t2, $t4 #$t5 = 1 if $t2 == 1 or $t4 == 1
 	jal check_false
 	
-check_char:
+check_char: # vong lap check tung ki tu mot, neu ki tu khong hop le thi ket qua cua chuong trinh la false
 	addi $a0, $a0, 1
 	
 	lb $t1, 0($a0)
@@ -92,26 +92,26 @@ check_char:
 	
 	j check_char
 	
-check_false1:
-	beq $t3, $zero, not_false
-	add $t8, $zero, $t3
+check_false1: # check xem ki tu co phai la so hay khong
+	or $s7, $t3, $t4
+	beq $s7, $zero, not_false
+	li $t8, 0
 	
 	jr $ra
 	
-check_false:
+check_false: # check xem ki tu co hop le hay khong
 
 	bne $t5, $zero, not_false
-	add $t8, $zero, $t5
-	
+	li $t8, 0
 	jr $ra
 	
 not_false:
 
 	jr $ra
 	
-end_proc:
+end_proc: # xoa dau xuong dong cuoi xau
 	li $s1, 0
-	sb $t0, 0($a0)
+	sb $s1, 0($a0)
 	bne $t8, $zero, true
 	j false
 	
