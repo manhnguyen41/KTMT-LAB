@@ -16,35 +16,26 @@
 # 		0x18 	0x28 	0x48 	0x88
 #------------------------------------------------------
 .text
-	main:			li $t1, IN_ADDRESS_HEXA_KEYBOARD
-				li $t2, OUT_ADDRESS_HEXA_KEYBOARD
-	polling_row1:
-		li $t3, 0x1 # check row 1 with key C, D, E, F
-		sb $t3, 0($t1) # must reassign expected row
-		lb $a0, 0($t2) # read scan code of key button
-		bne $a0, $zero, print
-	polling_row2: 
-		li $t3, 0x2 # check row 2 with key C, D, E, F
-		sb $t3, 0($t1) # must reassign expected row
-		lb $a0, 0($t2) # read scan code of key button
-		bne $a0, $zero, print
-	polling_row3: 
-		li $t3, 0x4 # check row 3 with key C, D, E, F
-		sb $t3, 0($t1) # must reassign expected row
-		lb $a0, 0($t2) # read scan code of key button
-		bne $a0, $zero, print
-	polling_row4: 
-		li $t3, 0x8 # check row 4 with key C, D, E, F
-		sb $t3, 0($t1) # must reassign expected row
-		lb $a0, 0($t2) # read scan code of key button
-		bne $a0, $zero, print
-	print:
-		li $v0, 34 # print integer (hexa)
-		syscall
-	sleep:	
-		li $a0, 100 # sleep 100ms 
-		li $v0, 32
-		syscall
-	back_to_polling1:
-		j polling_row1 # continue polling
+main:
+	li $t6, 0x1
+	li $t3, 0x81 		# check row 4 and re-enable bit 7
+get_cod:li $t1, IN_ADDRESS_HEXA_KEYBOARD
+	bgt $t3, 0x88, reset
+	sb $t3, 0($t1) 		# must reassign expected row
+	li $t1, OUT_ADDRESS_HEXA_KEYBOARD
+	lb $a0, 0($t1)
+	bnez $a0, prn_cod
+	mul $t6, $t6, 2
+	add $t3, $t6, 0x80
+	j get_cod
+prn_cod:li $v0,34
+	syscall
+	li $v0,11
+	li $a0,'\n' 		# print end-of-line
+	syscall
+	j main
+reset:	li $t3, 0x81
+	li $t6, 0x1
+	j get_cod
+
 		

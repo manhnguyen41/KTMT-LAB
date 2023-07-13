@@ -3,604 +3,111 @@
  						# Auto clear after sw
  					
 .data
-messageD: 	.ascii "Mau cua chu D (ky tu dau tien nhan duoc):"
+messageD: 	.asciiz "Mau cua chu D (1 ky tu):"
 colorD:		.space 2
-messageC: 	.ascii "Mau cua chu C (ky tu dau tien nhan duoc):"
+messageC: 	.asciiz "Mau cua chu C (1 ky tu):"
 colorC:		.space 2
-messageE: 	.ascii "Mau cua chu E (ky tu dau tien nhan duoc):"
+messageE: 	.asciiz "Mau cua chu E (1 ky tu):"
 colorE:		.space 2
-letterD:	.space 352
-letterC:	.space 320
-letterE:	.space 256
-email: 		.ascii "dce.hust.edu.vn"
+letterD:	.asciiz "                     \n**************       \n*222222222222222*    \n*22222******222222*  \n*22222*      *22222* \n*22222*       *22222*\n*22222*       *22222*\n*22222*       *22222*\n*22222*      *222222*\n*22222*******222222* \n*2222222222222222*   \n**************       \n      ---            \n    / o o \\          \n    \\   > /          \n     -----           "
+letterC:	.asciiz "                   \n                   \n                   \n                   \n                   \n     ************* \n   **11111*****111*\n **1111**       ** \n *1111*            \n*11111*            \n*11111*            \n*11111*            \n *1111**           \n  *1111****   *****\n   **111111***111* \n     ***********   "
+letterE:	.asciiz " ************* \n*3333333333333*\n*33333******** \n*33333*        \n*33333******** \n*3333333333333*\n*33333******** \n*33333*        \n*33333******** \n*3333333333333*\n ************* \n               \n               \n               \n               \ndce.hust.edu.vn"
 string:		.space 928
+warning:	.asciiz "Vui long nhap 1 ky tu"
 .text
  		la   $s0, DISPLAY_CODE
  		la   $s1, DISPLAY_READY
  		
-Input:		li   $v0, 54
+loopInputD:	li   $v0, 54			#check input mau cua chu D
 		la   $a0, messageD
 		la   $a1, colorD
 		la   $a2, 2
 		syscall
-		li   $v0, 54
+		beqz $a1, loopInputC
+		jal  Warning
+		j    loopInputD
+		
+loopInputC:	li   $v0, 54			#check input mau cua chu D
 		la   $a0, messageC
 		la   $a1, colorC
 		la   $a2, 2
 		syscall
-		li   $v0, 54
+		beqz $a1, loopInputE
+		jal  Warning
+		j    loopInputC
+		
+loopInputE:	li   $v0, 54			#check input mau cua chu D
 		la   $a0, messageE
 		la   $a1, colorE
 		la   $a2, 2
 		syscall
+		beqz $a1, LetterD
+		jal  Warning
+		j    loopInputE
+
+Warning:	li   $v0, 55
+		la   $a0, warning
+		li   $a1, 0
+		syscall
+		jr   $ra
 		
-LetterD:	li   $t2, 21 			#line 1
-		li   $t3, ' '
-		la   $t4, letterD
-		jal  AddChar
-		jal  NewLine
+LetterD:	la   $s2, letterD		#chinh sua mau cua chu D theo input
+		li   $t4, '2'
+		la   $s3, colorD
+		lb   $t3, 0($s3)
 		
-		li   $t2, 14			#line 2
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
+loopLetterD:	lb   $t2, 0($s2)
+		beq  $t2, $t4, ChangeD
+		beqz $t2, LetterC
+		addi $s2, $s2, 1
+		j    loopLetterD
+
+ChangeD:	sb   $t3, 0($s2)
+		addi $s2, $s2, 1
+		j    loopLetterD
 		
-		jal  AddOneStar			#line 3
-		li   $t2, 15
-		la   $t5, colorD
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 4
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
+LetterC:	la   $s2, letterC		#chinh sua mau cua chu C theo input
+		li   $t4, '1'
+		la   $s3, colorC
+		lb   $t3, 0($s3)
+		li   $t5, '\0'
 		
-		jal  AddOneStar			#line 4
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 6
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 6
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 2
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
+loopLetterC:	lb   $t2, 0($s2)
+		beq  $t2, $t4, ChangeC
+		beqz $t2, LetterE
+		addi $s2, $s2, 1
+		j    loopLetterC
+
+ChangeC:	sb   $t3, 0($s2)
+		addi $s2, $s2, 1
+		j    loopLetterC
 		
-		jal  AddOneStar			#line 5
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 6
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 1
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
+LetterE:	la   $s2, letterE		#chinh sua mau cua chu E theo input
+		li   $t4, '3'
+		la   $s3, colorE
+		lb   $t3, 0($s3)
+		li   $t5, '\0'
 		
-		jal  AddOneStar			#line 6
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 7
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 8
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 9
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 6
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 6
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 10
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 7
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 6
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 1
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 11
-		li   $t2, 16
-		la   $t5, colorD
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 3
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 14			#line 12
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 6			#line 13
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 3
-		li   $t3, '-'
-		jal  AddChar
-		li   $t2, 12			
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 4			#line 14
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1
-		li   $t3, '/'
-		jal  AddChar
-		li   $t2, 1			
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1			
-		li   $t3, 'o'
-		jal  AddChar
-		li   $t2, 1			
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1			
-		li   $t3, 'o'
-		jal  AddChar
-		li   $t2, 1			
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1
-		li   $t3, '\\'
-		jal  AddChar
-		li   $t2, 10
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 4			#line 15
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1
-		li   $t3, '\\'
-		jal  AddChar
-		li   $t2, 3			
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1		
-		li   $t3, '>'
-		jal  AddChar
-		li   $t2, 1			
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1
-		li   $t3, '/'
-		jal  AddChar
-		li   $t2, 10
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 5			#line 16
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 5
-		li   $t3, '-'
-		jal  AddChar
-		li   $t2, 11		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-LetterC:	li   $t2, 19 			#line 1
-		li   $t3, ' '
-		la   $t4, letterC
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 19 			#line 2
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 19 			#line 3
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 19 			#line 4
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 19 			#line 5
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-				
-		li   $t2, 5			#line 6
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 13
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1	
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 3			#line 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		jal  AddOneStar
-		li   $t2, 5
-		la   $t5, colorC
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 5
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 3
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		li   $t2, 1			#line 8
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		jal  AddOneStar
-		li   $t2, 4
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  AddOneStar
-		li   $t2, 7
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		jal  AddOneStar
-		li   $t2, 1
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 1			# line 9
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 4
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 12
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 10
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 12
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 11
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 12
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar			#line 12
-		li   $t2, 5
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 12
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 1			# line 13
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 4
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  AddOneStar
-		li   $t2, 11
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 2			#line 14
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 4
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 4			
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 3
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 5		
-		li   $t3, '*'
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 3			#line 15
-		li   $t3, ' '
-		jal  AddChar
-		jal  AddOneStar
-		jal  AddOneStar
-		li   $t2, 6
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 3
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 3
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 1			
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 5			#line 16
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 11
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 3	
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 1
-		li   $t3, '\0'
-		jal  AddChar
-		
-LetterE: 	li   $t2, 1 			#line 1
-		li   $t3, ' '
-		la   $t4, letterE
-		jal  AddChar
-		li   $t2, 13 			
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1 			
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 2
-		li   $t2, 13 			
-		la   $t5, colorE
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 3
-		li   $t2, 5		
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 8		
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 4
-		li   $t2, 5		
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 8		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 5
-		li   $t2, 5		
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 8		
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-				
-		jal  AddOneStar 		#line 6
-		li   $t2, 13 			
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 7
-		li   $t2, 5		
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 8		
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 8
-		li   $t2, 5		
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		li   $t2, 8		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 9
-		li   $t2, 5		
-		lb   $t3, 0($t5)
-		jal  AddChar
-		li   $t2, 8		
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1		
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		jal  AddOneStar 		#line 10
-		li   $t2, 13 			
-		lb   $t3, 0($t5)
-		jal  AddChar
-		jal  AddOneStar
-		jal  NewLine
-		
-		li   $t2, 1 			#line 11
-		li   $t3, ' '
-		jal  AddChar
-		li   $t2, 13 			
-		li   $t3, '*'
-		jal  AddChar
-		li   $t2, 1 			
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 15 			#line 12
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 15 			#line 13
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 15 			#line 14
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		li   $t2, 15 			#line 15
-		li   $t3, ' '
-		jal  AddChar
-		jal  NewLine
-		
-		la   $t5, email			#line 16
-		li   $t6, '\0'
-loopLetterE:	lb   $t3, 0($t5)
-		addi $t5, $t5, 1
-		li   $t2, 1
-		beq  $t3, $t6, DoneLetterE
-		jal  AddChar
+loopLetterE:	lb   $t2, 0($s2)
+		beq  $t2, $t4, ChangeE
+		beqz $t2, Concat
+		addi $s2, $s2, 1
+		j    loopLetterE
+
+ChangeE:	sb   $t3, 0($s2)
+		addi $s2, $s2, 1
 		j    loopLetterE
 		
-DoneLetterE:	li   $t2, 1
-		li   $t3, '\0'
-		jal  AddChar
-		
+		#Ghep cac chu voi nhau
 Concat:		la   $s2, string		#s2 = &string
-		la   $s3, letterE		#s3 = &letterD
-		la   $s4, letterE		#s4 = &letterC
+		la   $s3, letterD		#s3 = &letterD
+		la   $s4, letterC		#s4 = &letterC
 		la   $s5, letterE		#s5 = &letterE
 		li   $t6, '\n'
-		li   $t7, '\0'
 		
 loopD:		lb   $t3, 0($s3)		#t3 = letterD[i]	
 		beq  $t3, $t6, HandleNewLineD	#neu gap dau xuong dong thi xu ly
-		beq  $t3, $t7, HandleEndD	#new gap ket thuc xau thi xy ly
+		beqz $t3, HandleEndD		#new gap ket thuc xau thi xy ly
 		sb   $t3, 0($s2)		#string[j] = letterD[i]
 		addi $s3, $s3, 1		#i+=1
 		addi $s2, $s2, 1		#j+=1
@@ -608,7 +115,7 @@ loopD:		lb   $t3, 0($s3)		#t3 = letterD[i]
 		
 loopC:		lb   $t3, 0($s4)		#t3 = letterC[i]
 		beq  $t3, $t6, HandleNewLineC	#neu gap dau xuong dong thi xu ly
-		beq  $t3, $t7, HandleEndC	#new gap ket thuc xau thi xy ly
+		beqz $t3, HandleEndC		#new gap ket thuc xau thi xy ly
 		sb   $t3, 0($s2)		#string[j] = letterD[i]
 		addi $s4, $s4, 1		#i+=1
 		addi $s2, $s2, 1		#j+=1
@@ -616,7 +123,7 @@ loopC:		lb   $t3, 0($s4)		#t3 = letterC[i]
 		
 loopE:		lb   $t3, 0($s5)		#t3 = letterE[i]	
 		beq  $t3, $t6, HandleNewLineE	#neu gap dau xuong dong thi xu ly
-		beq  $t3, $t7, HandleEndE	#new gap ket thuc xau thi xy ly
+		beqz $t3, HandleEndE		#new gap ket thuc xau thi xy ly
 		sb   $t3, 0($s2)		#string[j] = letterD[i]
 		addi $s5, $s5, 1		#i+=1
 		addi $s2, $s2, 1		#j+=1
@@ -625,56 +132,39 @@ loopE:		lb   $t3, 0($s5)		#t3 = letterE[i]
 HandleNewLineD:	li   $t3, ' '			#t3 = ' '
 		sb   $t3, 0($s2)		#string[j] = t3
 		addi $s3, $s3, 1		#i+=1
-		addi $s2, $s2, 33		#nhay den dong tiep theo
+		addi $s2, $s2, 37		#nhay den dong tiep theo
 		j    loopD
 		
 HandleNewLineC:	li   $t3, ' '			#t3 = ' '
 		sb   $t3, 0($s2)		#string[j] = t3
 		addi $s4, $s4, 1		#i+=1
-		addi $s2, $s2, 33		#nhay den dong tiep theo
+		addi $s2, $s2, 39		#nhay den dong tiep theo
 		j    loopC
 		
 HandleNewLineE:	sb   $t3, 0($s2)		#string[j] = t3
 		addi $s5, $s5, 1		#i+=1
-		addi $s2, $s2, 33		#nhay den dong tiep theo
+		addi $s2, $s2, 43		#nhay den dong tiep theo
 		j    loopE
 		
 HandleEndD:	li   $t3, ' '			#t3 = ' '
 		sb   $t3, 0($s2)		#string[j] = t3
 		la   $s2, string
-		addi $s2, $s2, 16
+		addi $s2, $s2, 22
 		j    loopC
 
 HandleEndC:	li   $t3, ' '			#t3 = ' '
 		sb   $t3, 0($s2)		#string[j] = t3
 		la   $s2, string
-		addi $s2, $s2, 32
+		addi $s2, $s2, 42
 		j    loopE
 		
 HandleEndE:	sb   $t3, 0($s2)		#string[j] = '\0'
 		j    Show
 
-AddChar:	sb   $t3, 0($t4)
-		addi $t4, $t4, 1
-		addi $t2, $t2, -1
-		bnez $t2, AddChar
-		jr   $ra
-		
-NewLine: 	li   $t3, '\n'
-		sb   $t3, 0($t4)
-		addi $t4, $t4, 1
-		jr   $ra
-		
-AddOneStar:	li   $t3, '*'
-		sb   $t3, 0($t4)
-		addi $t4, $t4, 1
-		jr   $ra
-
-Show:		la   $s2, string
+Show:		la   $s2, string		#in ra
 LoopShow:	
 		lb   $t0, 0($s2)
-		li   $s3, '\0'
-		beq  $t0, $s3, Done
+		beqz $t0, Done
 		jal  ShowKey
 		addi $s2, $s2, 1
 		j    LoopShow

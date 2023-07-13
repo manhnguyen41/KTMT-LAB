@@ -1,10 +1,7 @@
 .data
-A: .word 0x12345678
+a: .word 
 .text
-	lw $t1, 8($s2)
-	nop
-	nop
-	nop
-	nop
-	nop
-hello:	nop
+    lui $t0, 0x1234
+    ori $t0, $t0, 0x5678
+    la  $t1, a
+    sw $t0, 0($t1)
